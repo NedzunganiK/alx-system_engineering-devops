@@ -1,2 +1,11 @@
 #!/bin/bash
-chmod 111 hello
+
+# Set execution permission for the owner
+chmod u+x hello
+
+# Set execution permission for the group owner
+chmod g+x hello
+
+# Set execution permission for other users
+chmod o+x hello
+
