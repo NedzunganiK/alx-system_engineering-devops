@@ -1,31 +1,30 @@
 #!/usr/bin/python3
-"""Exports to-do list information for a given employee ID to CSV format."""
-
-# Import the csv module for working with CSV files
-# Import the requests module for making HTTP requests
-# Import the sys module for accessing command line arguments
-import csv
+"""Exports to-do list information for a given employee ID to JSON format."""
+import json
 import requests
 import sys
 
-# Check if the script is being run as a standalone program
 if __name__ == "__main__":
-    # Get the employee ID from the first command line argument
+    # Get the user ID from command line arguments
     user_id = sys.argv[1]
-    # Define the base URL of the REST API
+
+    # Define the API endpoint URL
     url = "https://jsonplaceholder.typicode.com/"
-    # Get the user information for the employee with the given ID
+
+    # Get the user details using the API endpoint and the user ID
     user = requests.get(url + "users/{}".format(user_id)).json()
-    # Extract the username from the user information
     username = user.get("username")
-    # Get the to-do list information for the employee with the given ID
+
+    # Get the to-do list of the user using the API endpoint and the user ID
     todos = requests.get(url + "todos", params={"userId": user_id}).json()
 
-    # Open a new CSV file for writing with the name <user_id>.csv
-    with open("{}.csv".format(user_id), "w", newline="") as csvfile:
-        # Create a CSV writer object
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-        # Write a row to the CSV file for each task in the to-do list
-        [writer.writerow(
-            [user_id, username, t.get("completed"), t.get("title")])
-         for t in todos]
+    # Write the user to-do list information to a JSON file
+    with open("{}.json".format(user_id), "w") as jsonfile:
+        # Write the information as a dictionary, with the key as the user ID
+        # and the value as a list of dictionaries, each containing information
+        # about a to-do task
+        json.dump({user_id: [{
+                "task": t.get("title"),
+                "completed": t.get("completed"),
+                "username": username
+            } for t in todos]}, jsonfile)
